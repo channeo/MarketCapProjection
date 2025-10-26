@@ -1,13 +1,35 @@
-import React, { useState } from 'react';
+// Home.tsx
+import React, { useState, useEffect, useRef } from 'react';
 import InputForm from '../components/InputForm';
 import ResultTable from '../components/ResultTable';
 import Loader from '../components/Loader';
 import { useApi } from '../hooks/useApi';
 import { MarketCalcInput, MarketCalcOutput } from '../types';
+import { gsap } from 'gsap';
 
 const Home: React.FC = () => {
   const { fetchPrice, fetchPool, calculateMarketCaps, loading, error } = useApi();
   const [results, setResults] = useState<(MarketCalcInput & MarketCalcOutput)[]>([]);
+  const titleRef = useRef<HTMLHeadingElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    // Title animation
+    if (titleRef.current) {
+      gsap.fromTo(titleRef.current,
+        { y: -50, opacity: 0 },
+        { y: 0, opacity: 1, duration: 1, ease: "power2.out" }
+      );
+    }
+
+    // Container animation
+    if (containerRef.current) {
+      gsap.fromTo(containerRef.current,
+        { opacity: 0 },
+        { opacity: 1, duration: 0.8, delay: 0.3 }
+      );
+    }
+  }, []);
 
   const handleCalculate = async (
     tokenAddress: string,
@@ -48,12 +70,29 @@ const Home: React.FC = () => {
   };
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-3xl font-bold text-center mb-6">MarketCap Projection & Trade Cost Estimator</h1>
-      {error && <p className="text-red-500 text-center">{error}</p>}
+    <div ref={containerRef} className="container mx-auto p-4 min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+      <h1 
+        ref={titleRef}
+        className="text-4xl font-bold text-center mb-8 mt-4 bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent"
+      >
+        🚀 MarketCap Projection & Trade Cost Estimator
+      </h1>
+      
+      {error && (
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-xl mb-6 text-center transform animate-pulse">
+          {error}
+        </div>
+      )}
+      
       {loading && <Loader />}
+      
       <InputForm onSubmit={handleCalculate} />
-      {results.length > 0 && <ResultTable results={results} />}
+      
+      {results.length > 0 && (
+        <div className="mt-8">
+          <ResultTable results={results} />
+        </div>
+      )}
     </div>
   );
 };

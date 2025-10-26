@@ -4,12 +4,12 @@ import { MarketCalcInput } from '../types';
 const API_BASE_URL = 'http://localhost:4000';
 
 export const fetchPrice = async (tokenAddress: string) => {
-  const response = await axios.get(`${API_BASE_URL}/price/${tokenAddress}`);
+  const response = await axios.get(`${API_BASE_URL}/price/token/${tokenAddress}`);
   return response.data;
 };
 
 export const fetchPool = async (poolAddress: string) => {
-  const response = await axios.get(`${API_BASE_URL}/pool/${poolAddress}`);
+  const response = await axios.get(`${API_BASE_URL}/pool/pair/${poolAddress}`);
   return response.data;
 };
 
